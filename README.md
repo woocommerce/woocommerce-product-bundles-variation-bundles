@@ -13,8 +13,6 @@ Useful if you, for example:
 
 Once a variation has been mapped to a Product Bundle, customers who click the add-to-cart button after choosing its attributes will see the mapped Bundle in their cart, instead of the selected variation.
 
-<img width="900" src="https://user-images.githubusercontent.com/1783726/80000533-ebefb380-84c5-11ea-918c-8bdd60c4077e.png">
-
 ### Notes
 
 Before installing this plugin, please ensure that you are running the latest versions of both **WooCommerce** and **WooCommerce Product Bundles**.
