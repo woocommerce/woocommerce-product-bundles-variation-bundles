@@ -1,0 +1,25 @@
+{
+	"name": "woocommerce-product-bundles-bundle-variations'",
+	"title": "Product Bundles - Bundle Variations for WooCommerce",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/somewherewarm/woocommerce-product-bundles-bundle-variations.git"
+	},
+	"license": "GPL-3.0+",
+	"version": "1.0.0",
+	"homepage": "https://woocommerce.com/products/product-bundles/",
+	"main": "Gruntfile.js",
+	"devDependencies": {
+		"grunt": "~1.0.1",
+		"grunt-checktextdomain": "~1.0.0",
+		"grunt-contrib-jshint": "~1.1.0",
+		"grunt-contrib-uglify": "~3.0.0",
+		"grunt-contrib-watch": "^1.1.0",
+		"grunt-rtlcss": "~2.0.1",
+		"grunt-wp-i18n": "~1.0.0"
+	},
+	"engines": {
+		"node": ">=6.9.4",
+		"npm": ">=1.1.0"
+	}
+}
