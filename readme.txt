@@ -1,4 +1,4 @@
-=== Product Bundles - Variation Bundles for WooCommerce ===
+=== Product Bundles - Variation Bundles ===
 
 Contributors: SomewhereWarm
 Tags: woocommerce, product, bundles, map, variation
