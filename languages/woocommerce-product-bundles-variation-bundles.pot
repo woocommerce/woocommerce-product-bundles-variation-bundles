@@ -2,10 +2,9 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Product Bundles - Variation Bundles for WooCommerce "
-"1.0.0\n"
+"Project-Id-Version: Product Bundles - Variation Bundles 1.0.0\n"
 "Report-Msgid-Bugs-To: https://support.woothemes.com/hc/en-us\n"
-"POT-Creation-Date: 2020-05-26 19:04:59+00:00\n"
+"POT-Creation-Date: 2020-05-26 19:18:26+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -14,19 +13,19 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
-#: product-bundles-variation-bundles-for-woocommerce.php:159
+#: product-bundles-variation-bundles.php:159
 msgid "Variation Bundle"
 msgstr ""
 
-#: product-bundles-variation-bundles-for-woocommerce.php:160
+#: product-bundles-variation-bundles.php:160
 msgid "Choose a static Product Bundle to add to the cart instead of this variation."
 msgstr ""
 
-#: product-bundles-variation-bundles-for-woocommerce.php:161
+#: product-bundles-variation-bundles.php:161
 msgid "Search for a Product Bundle&hellip;"
 msgstr ""
 
-#: product-bundles-variation-bundles-for-woocommerce.php:185
+#: product-bundles-variation-bundles.php:185
 msgid ""
 "<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a "
 "href=\"%1$s\" target=\"_blank\">WooCommerce Product Bundles</a> version "
@@ -34,7 +33,7 @@ msgid ""
 msgstr ""
 
 #. Plugin Name of the plugin/theme
-msgid "Product Bundles - Variation Bundles for WooCommerce"
+msgid "Product Bundles - Variation Bundles"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
