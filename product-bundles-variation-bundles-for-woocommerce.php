@@ -3,11 +3,11 @@
  * Plugin Name: Product Bundles - Variation Bundles for WooCommerce
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.0.1
+ * Version: 1.0.0
  * Author: SomewhereWarm
- * Author URI: https://somewherewarm.gr/
+ * Author URI: https://somewherewarm.com/
  *
- * Text Domain: woocommerce-product-bundles-bundle-variations
+ * Text Domain: woocommerce-product-bundles-variation-bundles
  * Domain Path: /languages/
  *
  * Requires at least: 4.4
@@ -15,7 +15,7 @@
  * Requires PHP: 5.6
  *
  * WC requires at least: 3.1
- * WC tested up to: 4.1
+ * WC tested up to: 4.2
  *
  * Copyright: © 2017-2020 SomewhereWarm SMPC.
  * License: GNU General Public License v3.0
@@ -140,7 +140,7 @@ class WC_PB_Variable_Bundles {
 	 * @return void
 	 */
 	public static function localize_plugin() {
-		load_plugin_textdomain( 'woocommerce-product-bundles-bundle-variations', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain( 'woocommerce-product-bundles-variation-bundles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 
@@ -156,9 +156,9 @@ class WC_PB_Variable_Bundles {
 
 		?><div>
 			<p class="form-field form-row form-row-full">
-				<label for="variable_bundles_id"><?php _e( 'Variation Bundle', 'woocommerce-product-bundles-bundle-variations' ); ?></label>
-				<?php echo wc_help_tip( __( 'Choose a static Product Bundle to add to the cart instead of this variation.', 'woocommerce-product-bundles-bundle-variations' ) ); ?>
-				<select class="sw-select2-search--products" style="width: 100%" id="variable_bundles_id[<?php echo $loop; ?>]" name="variable_bundles_id[<?php echo $loop; ?>]" data-allow_clear="yes" data-placeholder="<?php esc_attr_e( 'Search for a Product Bundle&hellip;', 'woocommerce-product-bundles-bundle-variations' ); ?>" data-action="woocommerce_json_search_variable_bundles" data-exclude="<?php echo intval( $variation->ID ); ?>" data-limit="100" data-sortable="true">
+				<label for="variable_bundles_id"><?php _e( 'Variation Bundle', 'woocommerce-product-bundles-variation-bundles' ); ?></label>
+				<?php echo wc_help_tip( __( 'Choose a static Product Bundle to add to the cart instead of this variation.', 'woocommerce-product-bundles-variation-bundles' ) ); ?>
+				<select class="sw-select2-search--products" style="width: 100%" id="variable_bundles_id[<?php echo $loop; ?>]" name="variable_bundles_id[<?php echo $loop; ?>]" data-allow_clear="yes" data-placeholder="<?php esc_attr_e( 'Search for a Product Bundle&hellip;', 'woocommerce-product-bundles-variation-bundles' ); ?>" data-action="woocommerce_json_search_variable_bundles" data-exclude="<?php echo intval( $variation->ID ); ?>" data-limit="100" data-sortable="true">
 					<?php
 
 						$variation_object = wc_get_product( $variation->ID );
@@ -182,7 +182,7 @@ class WC_PB_Variable_Bundles {
 	 * PB version check notice.
 	 */
 	public static function pb_admin_notice() {
-	    echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-bundle-variations' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
+	    echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
 	}
 
 	/**

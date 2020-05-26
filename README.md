@@ -2,7 +2,7 @@
 
 ### What's This?
 
-Free mini-extension for [WooCommerce Product Bundles](https://woocommerce.com/products/product-bundles/?aff=46147&cid=5699243) that allows you to map variations to static Product Bundles.
+Free mini-extension for [WooCommerce Product Bundles](https://woocommerce.com/products/product-bundles/) that allows you to map variations to static Product Bundles.
 
 Useful if you, for example:
 
