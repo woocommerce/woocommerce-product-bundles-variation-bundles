@@ -11,7 +11,7 @@ Useful if you, for example:
 
 ### How It Works
 
-Once a variation has been mapped to a Product Bundle, customers who click the add-to-cart button after choosing its attributes will see the mapped Bundle in their cart, instead of the selected variation.
+Once a Product Bundle has been mapped to a variation, customers can choose variation attributes and then click the add-to-cart button to add the mapped Bundle to their cart.
 
 <img width="629" src="https://user-images.githubusercontent.com/1783726/80006861-21000400-84ce-11ea-9843-efe1d54ec4d3.png">
 

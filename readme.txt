@@ -11,7 +11,7 @@ WC tested up to: 4.2
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Free mini-extension for WooCommerce Product Bundles that allows you to map Bundles to variations. Once a Product Bundle has been mapped to a variation, customers who click the add-to-cart button after choosing the variation's attributes will find the mapped Bundle in their cart, instead of the selected variation.
+Free mini-extension for WooCommerce Product Bundles that allows you to map Bundles to variations. Once a Product Bundle has been mapped to a variation, customers can choose variation attributes and then click the add-to-cart button to add the mapped Bundle to their cart.
 
 
 == Description ==
