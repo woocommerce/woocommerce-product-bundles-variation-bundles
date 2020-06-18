@@ -97,6 +97,12 @@ class WC_PB_Variable_Bundles {
 		// Add Product Bundle to the cart instead of variation.
 		add_filter( 'woocommerce_add_to_cart_product_id', array( __CLASS__, 'add_bundle_to_cart' ) );
 
+		// Change Bundle's permalink to redirect back to the Variable Product page.
+		add_filter( 'woocommerce_cart_item_permalink', array( __CLASS__, 'bundle_cart_item_permalink' ), 90, 3 );
+
+		// Store variation ID in cart item data.
+		add_action( 'woocommerce_add_cart_item_data', array(  __CLASS__, 'store_variation_id' ), 10, 3 );
+
 		// Localization.
 		add_action( 'init', array( __CLASS__, 'localize_plugin' ) );
 
@@ -266,6 +272,50 @@ class WC_PB_Variable_Bundles {
 		}
 
 		return $add_to_cart_id;
+	}
+
+	/**
+	 * Store variation ID in cart item data.
+	 *
+	 * @param  array $cart_item_data
+	 * @param  int   $product_id
+	 * @param  int   $variation_id
+	 * @return array
+	 */
+	public static function store_variation_id( $cart_item_data, $product_id, $variation_id ) {
+
+		if ( ! isset( $_REQUEST[ 'variation_id' ] ) ) {
+			return $cart_item_data;
+		}
+
+		$product_type = WC_Data_Store::load( 'product' )->get_product_type( $product_id );
+
+		if ( 'bundle' === $product_type ) {
+			$cart_item_data[ '_bundle_variation_id' ] = $_REQUEST[ 'variation_id' ];
+		}
+
+		return $cart_item_data;
+	}
+
+	/**
+	 * Change Bundle's permalink to redirect back to the Variable Product page.
+	 *
+	 * @param  string  $html
+	 * @param  array   $cart_item
+	 * @param  string  $cart_item_key
+	 * @return string
+	 */
+	public static function bundle_cart_item_permalink( $html, $cart_item, $cart_item_key ) {
+
+		if ( ! isset( $cart_item[ '_bundle_variation_id' ] ) ) {
+			return $html;
+		}
+
+		if ( $html ) {
+			$html      = get_permalink( $cart_item[ '_bundle_variation_id' ] );
+		}
+
+		return $html;
 	}
 }
 
