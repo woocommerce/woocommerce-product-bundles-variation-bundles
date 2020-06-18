@@ -312,7 +312,7 @@ class WC_PB_Variable_Bundles {
 		}
 
 		if ( $html ) {
-			$html      = get_permalink( $cart_item[ '_bundle_variation_id' ] );
+			$html = get_permalink( $cart_item[ '_bundle_variation_id' ] );
 		}
 
 		return $html;
