@@ -5,9 +5,9 @@ Tags: woocommerce, product, bundles, map, variation
 Requires at least: 4.4
 Tested up to: 5.4
 Requires PHP: 5.6
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 WC requires at least: 3.1
-WC tested up to: 4.2
+WC tested up to: 4.3
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -39,7 +39,7 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 == Changelog ==
 
 = 1.0.1 =
-* Tweak - Redirect users back to the Variable Product page from the cart.
+* Tweak - Redirect users back to the Variable Product page when clicking cart item.
 
 = 1.0.0 =
 * Initial Release.
@@ -47,5 +47,5 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Upgrade Notice ==
 
-= 1.0.0 =
-Initial Release.
+= 1.0.1 =
+Redirect users back to the Variable Product page when clicking cart item.
