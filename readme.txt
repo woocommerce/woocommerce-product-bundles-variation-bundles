@@ -38,6 +38,9 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Changelog ==
 
+= 1.0.1 =
+* Tweak - Redirect users back to the Variable Product page from the cart.
+
 = 1.0.0 =
 * Initial Release.
 
