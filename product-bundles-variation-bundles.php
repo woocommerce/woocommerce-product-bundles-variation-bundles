@@ -311,11 +311,13 @@ class WC_PB_Variable_Bundles {
 			return $html;
 		}
 
-		if ( $html ) {
-			$html = get_permalink( $cart_item[ '_bundle_variation_id' ] );
+		$parent_product = wc_get_product( wp_get_post_parent_id( $cart_item[ '_bundle_variation_id' ] ) );
+
+		if ( ! ( $parent_product instanceof WC_Product_Variable ) || ! $parent_product->is_visible() ) {
+			return '';
 		}
 
-		return $html;
+		return get_permalink( $cart_item[ '_bundle_variation_id' ] );
 	}
 }
 
