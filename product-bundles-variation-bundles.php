@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.0.2-dev
+ * Version: 1.0.2
  * Author: SomewhereWarm
  * Author URI: https://somewherewarm.com/
  *
@@ -11,11 +11,11 @@
  * Domain Path: /languages/
  *
  * Requires at least: 4.4
- * Tested up to: 5.4
+ * Tested up to: 5.6
  * Requires PHP: 5.6
  *
  * WC requires at least: 3.1
- * WC tested up to: 4.3
+ * WC tested up to: 4.8
  *
  * Copyright: © 2017-2020 SomewhereWarm SMPC.
  * License: GNU General Public License v3.0
@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.0.2-dev';
+	public static $version = '1.0.2';
 
 	/**
 	 * Min required PB version.
@@ -48,7 +48,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	private static $pb_url = 'https://woocommerce.com/products/product-bundles/?aff=46147&cid=7316145&pid=pb_vb';
+	private static $pb_url = 'https://woocommerce.com/products/product-bundles/';
 
 	/**
 	 * Plugin URL.
