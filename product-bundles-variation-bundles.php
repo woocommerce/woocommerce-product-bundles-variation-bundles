@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.0.1
+ * Version: 1.0.2-dev
  * Author: SomewhereWarm
  * Author URI: https://somewherewarm.com/
  *
@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.0.1';
+	public static $version = '1.0.2-dev';
 
 	/**
 	 * Min required PB version.
@@ -257,16 +257,16 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function add_bundle_to_cart( $add_to_cart_id ) {
 
-		if ( ! isset( $_REQUEST[ 'variation_id' ] ) ) {
+		if ( ! isset( $_REQUEST[ 'variation_id' ] ) || empty( $_REQUEST[ 'variation_id' ] ) ) {
 			return $add_to_cart_id;
 		}
 
 		$product_type = WC_Data_Store::load( 'product' )->get_product_type( $add_to_cart_id );
 
 		if ( 'variable' === $product_type ) {
-			$variation = wc_get_product( absint( $_REQUEST[ 'variation_id' ] ) );
 
-			if ( ! empty( $variation->get_meta( '_wc_pb_variable_bundle' ) ) ) {
+			$variation = wc_get_product( absint( $_REQUEST[ 'variation_id' ] ) );
+			if ( is_a( $variation, 'WC_Product') && ! empty( $variation->get_meta( '_wc_pb_variable_bundle' ) ) ) {
 				$add_to_cart_id  = $variation->get_meta( '_wc_pb_variable_bundle' );
 			}
 		}
@@ -284,7 +284,7 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function store_variation_id( $cart_item_data, $product_id, $variation_id ) {
 
-		if ( ! isset( $_REQUEST[ 'variation_id' ] ) ) {
+		if ( ! isset( $_REQUEST[ 'variation_id' ] ) || empty( $_REQUEST[ 'variation_id' ] ) ) {
 			return $cart_item_data;
 		}
 
