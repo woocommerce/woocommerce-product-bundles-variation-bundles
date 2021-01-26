@@ -5,9 +5,9 @@ Tags: woocommerce, product, bundles, map, variation
 Requires at least: 4.4
 Tested up to: 5.6
 Requires PHP: 5.6
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 WC requires at least: 3.1
-WC tested up to: 4.8
+WC tested up to: 5.0
 License: GNU General Public License v3.0
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -38,6 +38,9 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Changelog ==
 
+= 1.0.3 =
+* Tweak - Declared compatibility with latest WordPress and WooCommerce versions.
+
 = 1.0.2 =
 * Fix - Fixed an error when variation IDs are not posted correctly while adding Variable products to the cart.
 
@@ -50,5 +53,5 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-Fixed an error when variation IDs are not posted correctly while adding Variable products to the cart.
+= 1.0.3 =
+Declared compatibility with latest WordPress and WooCommerce versions.
