@@ -38,6 +38,9 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Changelog ==
 
+= 1.0.4 =
+* Feature - Add compatibility with the WooCommerce Importer/Exporter.
+
 = 1.0.3 =
 * Tweak - Declared compatibility with latest WordPress and WooCommerce versions.
 
@@ -53,5 +56,5 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Upgrade Notice ==
 
-= 1.0.3 =
-Declared compatibility with latest WordPress and WooCommerce versions.
+= 1.0.4 =
+Add compatibility with the WooCommerce Importer/Exporter.
