@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.0.3';
+	public static $version = '1.0.4';
 
 	/**
 	 * Min required PB version.
@@ -360,7 +360,7 @@ class WC_PB_Variable_Bundles {
 	 * @return array  $options
 	 */
 	public static function map_columns( $options ) {
-		$options[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles' );
+		$options[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' );
 		return $options;
 	}
 
@@ -427,7 +427,7 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function add_columns( $columns ) {
 
-		$columns[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles' );
+		$columns[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' );
 
 		return $columns;
 	}
