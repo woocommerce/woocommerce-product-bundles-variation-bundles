@@ -211,7 +211,7 @@ class WC_PB_Variable_Bundles {
 	 * PB version check notice.
 	 */
 	public static function pb_admin_notice() {
-	    echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
 	}
 
 	/**
@@ -372,7 +372,7 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function add_columns_to_mapping_screen( $columns ) {
 
-		$columns[ __( 'Variation Bundles', 'woocommerce-product-bundles' ) ] = 'wc_pb_variation_bundles';
+		$columns[ __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' ) ] = 'wc_pb_variation_bundles';
 
 		// Always add English mappings.
 		$columns[ 'Variation Bundles' ] = 'wc_pb_variation_bundles';
@@ -392,7 +392,7 @@ class WC_PB_Variable_Bundles {
 
 		if ( ! empty( $parsed_data[ 'wc_pb_variation_bundles' ] ) ) {
 
-			$product_id   = $parsed_data[ 'wc_pb_variation_bundles' ];
+			$product_id   = $importer->parse_relative_field( $parsed_data[ 'wc_pb_variation_bundles' ] );
 			$product_type = WC_Data_Store::load( 'product' )->get_product_type( $product_id );
 
 			if ( 'bundle' !== $product_type ) {
@@ -443,7 +443,13 @@ class WC_PB_Variable_Bundles {
 	public static function export_variation_bundles( $value, $product ) {
 
 		if ( $product->is_type( 'variation' ) ) {
-		 	$value = $product->get_meta( '_wc_pb_variable_bundle', true );
+			$bundle_id   = $product->get_meta( '_wc_pb_variable_bundle', true );
+
+			if ( ! empty( $bundle_id ) ) {
+				$bundle      = wc_get_product( $bundle_id );
+				$bundle_sku  = $bundle->get_sku();
+				$value       = $bundle_sku ? $bundle_sku : 'id:' . $bundle_id;
+			}
 		}
 
 		return $value;
