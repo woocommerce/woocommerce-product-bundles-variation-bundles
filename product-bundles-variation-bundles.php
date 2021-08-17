@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: SomewhereWarm
  * Author URI: https://somewherewarm.com/
  *
@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.0.3';
+	public static $version = '1.0.4';
 
 	/**
 	 * Min required PB version.
@@ -110,6 +110,29 @@ class WC_PB_Variable_Bundles {
 			// Enqueue admin scripts.
 			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_scripts' ) );
 		}
+
+		/*
+		* Compatibility and Integrations.
+		*
+		*/
+
+		// WooCommerce Importer.
+
+		// Map imported columns.
+		add_filter( 'woocommerce_csv_product_import_mapping_options', array( __CLASS__, 'map_columns' ), 11 );
+		add_filter( 'woocommerce_csv_product_import_mapping_default_columns', array( __CLASS__, 'add_columns_to_mapping_screen' ), 11 );
+
+		// Parse Variation Bundles.
+		add_filter( 'woocommerce_product_importer_parsed_data', array( __CLASS__, 'parse_variation_bundles' ), 10, 2 );
+
+		// WooCommerce Exporter.
+
+		// Add CSV columns for exporting Variation Bundles.
+		add_filter( 'woocommerce_product_export_column_names', array( __CLASS__, 'add_columns' ), 11 );
+		add_filter( 'woocommerce_product_export_product_default_columns', array( __CLASS__, 'add_columns' ), 11 );
+
+		// "Variation Bundles" column data.
+		add_filter( 'woocommerce_product_export_product_column_wc_pb_variation_bundles', array( __CLASS__, 'export_variation_bundles' ), 10, 2 );
 	}
 
 	/**
@@ -188,7 +211,7 @@ class WC_PB_Variable_Bundles {
 	 * PB version check notice.
 	 */
 	public static function pb_admin_notice() {
-	    echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce Product Bundles</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_pb_version ) . '</p></div>';
 	}
 
 	/**
@@ -318,6 +341,118 @@ class WC_PB_Variable_Bundles {
 		}
 
 		return get_permalink( $cart_item[ '_bundle_variation_id' ] );
+	}
+
+	/*
+	* Compatibility and Integrations.
+	*
+	*/
+
+	/*
+	* WooCommerce Importer.
+	*
+	*/
+
+	/**
+	 * Register the 'Variable Bundles' column in the importer.
+	 *
+	 * @param  array  $options
+	 * @return array  $options
+	 */
+	public static function map_columns( $options ) {
+		$options[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' );
+		return $options;
+	}
+
+	/**
+	 * Add automatic mapping support for custom columns.
+	 *
+	 * @param  array  $columns
+	 * @return array  $columns
+	 */
+	public static function add_columns_to_mapping_screen( $columns ) {
+
+		$columns[ __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' ) ] = 'wc_pb_variation_bundles';
+
+		// Always add English mappings.
+		$columns[ 'Variation Bundles' ] = 'wc_pb_variation_bundles';
+
+		return $columns;
+	}
+
+	/**
+	 * Parse Variation Bundles data.
+	 *
+	 *
+	 * @param  array                    $parsed_data
+	 * @param  WC_Product_CSV_Importer  $importer
+	 * @return array
+	 */
+	public static function parse_variation_bundles( $parsed_data, $importer ) {
+
+		if ( ! empty( $parsed_data[ 'wc_pb_variation_bundles' ] ) ) {
+
+			$product_id   = $importer->parse_relative_field( $parsed_data[ 'wc_pb_variation_bundles' ] );
+			$product_type = WC_Data_Store::load( 'product' )->get_product_type( $product_id );
+
+			if ( 'bundle' !== $product_type ) {
+				return $parsed_data;
+			}
+
+			$product = wc_get_product( $product_id );
+
+			if ( ! is_object( $product ) || $product->has_options() ) {
+				return $parsed_data;
+			}
+
+			$parsed_data[ 'meta_data' ][] = array(
+				'key'   => '_wc_pb_variable_bundle',
+				'value' => $product_id
+			);
+		}
+
+		return $parsed_data;
+	}
+
+	/*
+	* WooCommerce Exporter.
+	*
+	*/
+
+	/**
+	 * Add CSV columns for exporting Variation Bundles.
+	 *
+	 * @param  array  $columns
+	 * @return array  $columns
+	 */
+	public static function add_columns( $columns ) {
+
+		$columns[ 'wc_pb_variation_bundles' ] = __( 'Variation Bundles', 'woocommerce-product-bundles-variation-bundles' );
+
+		return $columns;
+	}
+
+	/**
+	 * "Variation Bundles" field content.
+	 *
+	 *
+	 * @param  mixed       $value
+	 * @param  WC_Product  $product
+	 * @return mixed       $value
+	 */
+	public static function export_variation_bundles( $value, $product ) {
+
+		if ( $product->is_type( 'variation' ) ) {
+			$bundle_id   = $product->get_meta( '_wc_pb_variable_bundle', true );
+
+			if ( ! empty( $bundle_id ) ) {
+				$bundle      = wc_get_product( $bundle_id );
+				$bundle_sku  = $bundle->get_sku();
+				$value       = $bundle_sku ? $bundle_sku : 'id:' . $bundle_id;
+			}
+		}
+
+		return $value;
 	}
 }
 
