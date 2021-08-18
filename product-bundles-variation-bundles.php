@@ -11,11 +11,11 @@
  * Domain Path: /languages/
  *
  * Requires at least: 4.4
- * Tested up to: 5.6
+ * Tested up to: 5.8
  * Requires PHP: 5.6
  *
  * WC requires at least: 3.1
- * WC tested up to: 5.0
+ * WC tested up to: 5.6
  *
  * Copyright: © 2017-2020 SomewhereWarm SMPC.
  * License: GNU General Public License v3.0
