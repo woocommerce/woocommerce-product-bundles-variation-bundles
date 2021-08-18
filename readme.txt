@@ -5,7 +5,7 @@ Tags: woocommerce, product, bundles, map, variation
 Requires at least: 4.4
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 1.0.4
+Stable tag: 1.1.0
 WC requires at least: 3.1
 WC tested up to: 5.6
 License: GNU General Public License v3.0
@@ -38,8 +38,10 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Changelog ==
 
-= 1.0.4 =
+= 1.1.0 =
+* Feature - Inherit variation props from mapped bundle.
 * Feature - Add compatibility with the WooCommerce Importer/Exporter.
+* Tweak - Declared compatibility with latest WordPress and WooCommerce versions.
 
 = 1.0.3 =
 * Tweak - Declared compatibility with latest WordPress and WooCommerce versions.
@@ -57,4 +59,4 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 == Upgrade Notice ==
 
 = 1.0.4 =
-Add compatibility with the WooCommerce Importer/Exporter.
+Add compatibility with the WooCommerce Importer/Exporter. Inherit variation props from mapped bundle.
