@@ -354,6 +354,16 @@ class WC_PB_Variable_Bundles {
 	public static function variation_get_manage_stock( $manage_stock, $variation ) {
 
 		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+
+			// 'WC_Product_Variation::get_manage_stock' is called in 'view' context when rendering variation admin fields.
+			if ( did_action( 'woocommerce_variation_header' ) !== did_action( 'woocommerce_variation_options' ) ) {
+				return false;
+			}
+
+			$parent_data = $variation->get_parent_data();
+			$parent_data[ 'manage_stock' ] = 'no';
+			$variation->set_parent_data( $parent_data );
+
 			return $variation_bundle->get_manage_stock();
 		}
 
