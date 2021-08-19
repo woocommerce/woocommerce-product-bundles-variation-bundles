@@ -96,6 +96,7 @@ class WC_PB_Variable_Bundles {
 
 		// Inherit props from mapped bundle.
 		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'before_product_object_save' ), 10 );
+
 		add_filter( 'woocommerce_product_variation_get_manage_stock', array( __CLASS__, 'variation_get_manage_stock' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_virtual', array( __CLASS__, 'variation_get_virtual' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_stock_status', array( __CLASS__, 'variation_get_stock_status' ), 10, 2 );
@@ -105,6 +106,10 @@ class WC_PB_Variable_Bundles {
 		add_filter( 'woocommerce_product_variation_get_height', array( __CLASS__, 'variation_get_height' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_shipping_class_id', array( __CLASS__, 'variation_get_shipping_class_id' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_tax_class', array( __CLASS__, 'variation_get_tax_class' ), 10, 2 );
+		add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'variation_get_price' ), 10, 2 );
+		add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'variation_get_regular_price' ), 10, 2 );
+		add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'variation_get_sale_price' ), 10, 2 );
+		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'variation_prices' ), 10, 2 );
 
 		// Add Product Bundle to the cart instead of variation.
 		add_filter( 'woocommerce_add_to_cart_product_id', array( __CLASS__, 'add_bundle_to_cart' ) );
@@ -274,10 +279,10 @@ class WC_PB_Variable_Bundles {
 	public static function process_variable_bundles( $variation_id, $index ) {
 
 		$variation           = wc_get_product( $variation_id );
-		$variable_bundles_id = ! empty( $_POST[ 'variable_bundles_id' ][ $index ] ) ? absint( $_POST[ 'variable_bundles_id' ][ $index ] ) : false;
+		$variation_bundle_id = ! empty( $_POST[ 'variable_bundles_id' ][ $index ] ) ? absint( $_POST[ 'variable_bundles_id' ][ $index ] ) : false;
 
-		if ( $variable_bundles_id ) {
-			$variation->update_meta_data( '_wc_pb_variable_bundle', $variable_bundles_id );
+		if ( $variation_bundle_id ) {
+			$variation->update_meta_data( '_wc_pb_variable_bundle', $variation_bundle_id );
 		} else {
 			$variation->delete_meta_data( '_wc_pb_variable_bundle' );
 		}
@@ -299,12 +304,7 @@ class WC_PB_Variable_Bundles {
 			return;
 		}
 
-		$variable_bundles_id = $product->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-
-			$min_bundle_regular_price = $variable_bundle->get_min_raw_regular_price();
-			$min_bundle_price         = $variable_bundle->get_min_raw_price();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $product ) ) {
 
 			$product->set_manage_stock( false );
 			$product->set_downloadable( false );
@@ -317,14 +317,9 @@ class WC_PB_Variable_Bundles {
 			$product->set_length( '' );
 			$product->set_shipping_class_id( 0 );
 			$product->set_tax_class( '' );
-
-			if ( $min_bundle_regular_price ) {
-				$product->set_regular_price( $min_bundle_regular_price );
-			}
-
-			if ( $min_bundle_price < $min_bundle_regular_price ) {
-				$product->set_sale_price( $variable_bundle->get_min_raw_price() );
-			}
+			$product->set_regular_price( 0 );
+			$product->set_price( 0 );
+			$product->set_sale_price( 0 );
 		}
 	}
 
@@ -339,10 +334,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_manage_stock( $manage_stock, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			return $variable_bundle->get_manage_stock();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			return $variation_bundle->get_manage_stock();
 		}
 
 		return $manage_stock;
@@ -359,10 +352,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_virtual( $is_virtual, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			return $variable_bundle->get_virtual();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			return $variation_bundle->get_virtual();
 		}
 
 		return $is_virtual;
@@ -379,10 +370,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_stock_quantity( $stock_quantity, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$stock_quantity = $variable_bundle->get_bundle_stock_quantity();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$stock_quantity = $variation_bundle->get_bundle_stock_quantity();
 			if ( '' === $stock_quantity ) {
 				$stock_quantity = null;
 			}
@@ -402,10 +391,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_stock_status( $stock_status, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$stock_status = 'insufficientstock' === $variable_bundle->get_bundle_stock_status() ? 'outofstock' : $variable_bundle->get_stock_status();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$stock_status = 'insufficientstock' === $variation_bundle->get_bundle_stock_status() ? 'outofstock' : $variation_bundle->get_stock_status();
 		}
 
 		return $stock_status;
@@ -422,10 +409,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_weight( $weight, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$weight = $variable_bundle->get_weight();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$weight = $variation_bundle->get_weight();
 		}
 
 		return $weight;
@@ -442,10 +427,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_width( $width, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$width = $variable_bundle->get_width();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$width = $variation_bundle->get_width();
 		}
 
 		return $width;
@@ -462,10 +445,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_length( $length, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$length = $variable_bundle->get_width();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$length = $variation_bundle->get_length();
 		}
 
 		return $length;
@@ -482,10 +463,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_height( $height, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$height = $variable_bundle->get_width();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$height = $variation_bundle->get_height();
 		}
 
 		return $height;
@@ -502,10 +481,8 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_shipping_class_id( $shipping_class_id, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$shipping_class_id = $variable_bundle->get_shipping_class_id();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$shipping_class_id = $variation_bundle->get_shipping_class_id();
 		}
 
 		return $shipping_class_id;
@@ -522,19 +499,166 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_tax_class( $tax_class, $variation ) {
 
-		$variable_bundles_id = $variation->get_meta( '_wc_pb_variable_bundle' );
-
-		if ( $variable_bundles_id && ( $variable_bundle = wc_get_product( $variable_bundles_id ) ) ) {
-			$tax_class = $variable_bundle->get_tax_class();
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$tax_class = $variation_bundle->get_tax_class();
 		}
 
 		return $tax_class;
 	}
 
 	/**
+	 * Inherit from mapped bundle.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  string      $price
+	 * @param  WC_Product  $variation
+	 * @return void
+	 */
+	public static function variation_get_price( $price, $variation ) {
+
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$price = $variation_bundle->get_min_raw_price();
+		}
+
+		return $price;
+	}
+
+	/**
+	 * Inherit from mapped bundle.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  string      $regular_price
+	 * @param  WC_Product  $variation
+	 * @return void
+	 */
+	public static function variation_get_regular_price( $regular_price, $variation ) {
+
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$regular_price = $variation_bundle->get_min_raw_regular_price();
+		}
+
+		return $regular_price;
+	}
+
+	/**
+	 * Inherit from mapped bundle.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  string      $sale_price
+	 * @param  WC_Product  $variation
+	 * @return void
+	 */
+	public static function variation_get_sale_price( $sale_price, $variation ) {
+
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			$sale_price = $variation_bundle->get_min_raw_price();
+		}
+
+		return $sale_price;
+	}
+
+	/**
+	 * Inherit prices from mapped bundles.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  array       $prices
+	 * @param  WC_Product  $product
+	 * @return void
+	 */
+	public static function variation_prices( $prices_array, $product ) {
+
+		$prices         = array();
+		$regular_prices = array();
+		$sale_prices    = array();
+
+		// Filter regular prices.
+		foreach ( $prices_array[ 'regular_price' ] as $variation_id => $regular_price ) {
+			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
+				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price();
+			} else {
+				$regular_prices[ $variation_id ] = $regular_price;
+			}
+		}
+
+		// Filter prices.
+		foreach ( $prices_array[ 'price' ] as $variation_id => $price ) {
+			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
+				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+			} else {
+				$prices[ $variation_id ] = $price;
+			}
+		}
+
+		// Filter sale prices.
+		foreach ( $prices_array[ 'sale_price' ] as $variation_id => $sale_price ) {
+			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
+				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+			} else {
+				$sale_prices[ $variation_id ] = $sale_price;
+			}
+		}
+
+		asort( $regular_prices );
+		asort( $prices );
+		asort( $sale_prices );
+
+		$prices_array = array(
+			'price'         => $prices,
+			'regular_price' => $regular_prices,
+			'sale_price'    => $sale_prices
+		);
+
+		return $prices_array;
+	}
+
+	/**
+	 * Retrieve the bundle mapped to a variation.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  WC_Product_Variation|int  $variation
+	 * @return WC_Product_Bundle|false
+	 */
+	public static function maybe_get_variation_bundle( $variation ) {
+
+		if ( $variation instanceof WC_Product_Variation ) {
+			$variation_id = $variation->get_id();
+		} else {
+			$variation_id = (int) $variation;
+		}
+
+		$variation_bundle = WC_PB_Helpers::cache_get( 'variation_bundle_' . $variation_id );
+
+		if ( null !== $variation_bundle ) {
+			return $variation_bundle;
+		}
+
+		$variation_bundle    = false;
+		$variation_bundle_id = false;
+
+		if ( $variation instanceof WC_Product_Variation ) {
+			$variation_bundle_id = $variation->get_meta( '_wc_pb_variable_bundle' );
+		} else {
+			$variation_bundle_id = (int) get_post_meta( $variation_id, '_wc_pb_variable_bundle', true );
+		}
+
+		if ( $variation_bundle_id ) {
+			$variation_bundle = wc_get_product( $variation_bundle_id );
+		}
+
+		WC_PB_Helpers::cache_set( 'variation_bundle_' . $variation_id, $variation_bundle );
+
+		return $variation_bundle;
+	}
+
+	/**
 	 * Add Product Bundle to the cart instead of variation.
 	 *
-	 * @param int $add_to_cart_id
+	 * @param  int $add_to_cart_id
 	 * @return int
 	 */
 	public static function add_bundle_to_cart( $add_to_cart_id ) {
@@ -559,9 +683,9 @@ class WC_PB_Variable_Bundles {
 	/**
 	 * Store variation ID in cart item data.
 	 *
-	 * @param  array $cart_item_data
-	 * @param  int   $product_id
-	 * @param  int   $variation_id
+	 * @param  array  $cart_item_data
+	 * @param  int    $product_id
+	 * @param  int    $variation_id
 	 * @return array
 	 */
 	public static function store_variation_id( $cart_item_data, $product_id, $variation_id ) {
