@@ -97,6 +97,7 @@ class WC_PB_Variable_Bundles {
 		// Inherit props from mapped bundle.
 		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'before_product_object_save' ), 10 );
 
+		add_filter( 'woocommerce_product_variation_get_sku', array( __CLASS__, 'variation_get_sku' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_manage_stock', array( __CLASS__, 'variation_get_manage_stock' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_virtual', array( __CLASS__, 'variation_get_virtual' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_stock_status', array( __CLASS__, 'variation_get_stock_status' ), 10, 2 );
@@ -321,6 +322,24 @@ class WC_PB_Variable_Bundles {
 			$product->set_price( 0 );
 			$product->set_sale_price( 0 );
 		}
+	}
+
+	/**
+	 * Inherit from mapped bundle.
+	 *
+	 * @since  1.1.0
+	 *
+	 * @param  bool        $sku
+	 * @param  WC_Product  $variation
+	 * @return void
+	 */
+	public static function variation_get_sku( $sku, $variation ) {
+
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
+			return $variation_bundle->get_sku();
+		}
+
+		return $sku;
 	}
 
 	/**
