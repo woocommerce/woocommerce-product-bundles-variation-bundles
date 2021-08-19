@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Product Bundles - Variation Bundles 1.1.0\n"
 "Report-Msgid-Bugs-To: https://support.woothemes.com/hc/en-us\n"
-"POT-Creation-Date: 2021-08-18 11:53:59+00:00\n"
+"POT-Creation-Date: 2021-08-19 17:19:55+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,28 +13,28 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
-#: product-bundles-variation-bundles.php:201
+#: product-bundles-variation-bundles.php:206
 msgid "Variation Bundle"
 msgstr ""
 
-#: product-bundles-variation-bundles.php:202
+#: product-bundles-variation-bundles.php:207
 msgid "Choose a static Product Bundle to add to the cart instead of this variation."
 msgstr ""
 
-#: product-bundles-variation-bundles.php:203
+#: product-bundles-variation-bundles.php:208
 msgid "Search for a Product Bundle&hellip;"
 msgstr ""
 
-#: product-bundles-variation-bundles.php:227
+#: product-bundles-variation-bundles.php:232
 msgid ""
 "<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a "
 "href=\"%1$s\" target=\"_blank\">WooCommerce Product Bundles</a> version "
 "<strong>%2$s</strong> or higher."
 msgstr ""
 
-#: product-bundles-variation-bundles.php:622
-#: product-bundles-variation-bundles.php:634
-#: product-bundles-variation-bundles.php:689
+#: product-bundles-variation-bundles.php:746
+#: product-bundles-variation-bundles.php:758
+#: product-bundles-variation-bundles.php:813
 msgid "Variation Bundles"
 msgstr ""
 
