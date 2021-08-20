@@ -127,6 +127,7 @@ class WC_PB_Variable_Bundles {
 		if ( is_admin() ) {
 			// Enqueue admin scripts.
 			add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_scripts' ) );
+			add_action( 'admin_head', array( __CLASS__, 'enqueue_admin_styles' ) );
 		}
 
 		/*
@@ -154,6 +155,37 @@ class WC_PB_Variable_Bundles {
 	}
 
 	/**
+	 * Enqueue styles.
+	 *
+	 * @return void
+	 */
+	public static function enqueue_admin_styles() {
+
+		// Get admin screen ID.
+		$screen    = get_current_screen();
+		$screen_id = $screen ? $screen->id : '';
+
+		/*
+		 * Enqueue styles.
+		 */
+		if ( 'product' === $screen_id ) {
+			$styles = '
+			<style>
+				.woocommerce_variable_attributes.variation_bundle_enabled .form-row.options label.tips,
+				.woocommerce_variable_attributes.variation_bundle_enabled .form-row:not(.options, .upload_image ),
+				.woocommerce_variable_attributes.variation_bundle_enabled .form-field {
+					display: none !important;
+				}
+				.woocommerce_variable_attributes.variation_bundle_enabled .variation_bundles_row .form-field {
+					display: block !important;
+				}
+			</style>
+			';
+			echo $styles;
+		}
+	}
+
+	/**
 	 * Enqueue scripts.
 	 *
 	 * @return void
@@ -169,16 +201,60 @@ class WC_PB_Variable_Bundles {
 		 */
 		if ( 'product' === $screen_id ) {
 
-			wc_enqueue_js( "
-				jQuery( function( $ ) {
+			wc_enqueue_js( '
+				;( function( $ ) {
 
-					var wrapper = jQuery( '#woocommerce-product-data' );
+					// Cache containers.
+					var $wrapper              = $( "#woocommerce-product-data" ),
+						$variations_container = $wrapper.find( "#variable_product_options" );
+					if ( ! $wrapper.length ) {
+						return;
+					}
 
-					wrapper.on( 'woocommerce_variations_loaded woocommerce_variations_added', function() {
-						jQuery( '.woocommerce_variations', wrapper ).sw_select2();
+					var toggle_elements = function( $container, hide ) {
+
+						if ( hide === "true" ) {
+							$container.addClass( "variation_bundle_enabled" );
+						} else if ( hide === "false" ) {
+							$container.removeClass( "variation_bundle_enabled" );
+						}
+					};
+
+					var hide_elements = function( $container ) {
+						toggle_elements( $container, "true" );
+					};
+
+					var show_elements = function( $container ) {
+						toggle_elements( $container, "false" );
+					};
+
+					// Init variations data.
+					$wrapper.on( "woocommerce_variations_loaded woocommerce_variations_added", function() {
+
+						var $variation_bundles_selects = $variations_container.find( ".variation-bundles-select" );
+						$variation_bundles_selects.each( function( index ) {
+
+							var $select    = $( this ),
+								$container = $select.parents( ".woocommerce_variable_attributes" );
+
+							$container.sw_select2();
+							if ( $select.val() ) {
+								hide_elements( $container );
+							}
+
+							$select.on( "change", function() {
+								var $this = $( this );
+								if ( ! $this.val() ) {
+									show_elements( $container );
+								} else {
+									hide_elements( $container );
+								}
+							} );
+						} );
 					} );
-				} );
-			" );
+
+				} )( jQuery );
+			' );
 		}
 	}
 
@@ -202,11 +278,11 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function product_variations_options( $loop, $variation_data, $variation ) {
 
-		?><div>
+		?><div class="variation_bundles_row">
 			<p class="form-field form-row form-row-full">
 				<label for="variable_bundles_id"><?php _e( 'Variation Bundle', 'woocommerce-product-bundles-variation-bundles' ); ?></label>
 				<?php echo wc_help_tip( __( 'Choose a static Product Bundle to add to the cart instead of this variation.', 'woocommerce-product-bundles-variation-bundles' ) ); ?>
-				<select class="sw-select2-search--products" style="width: 100%" id="variable_bundles_id[<?php echo $loop; ?>]" name="variable_bundles_id[<?php echo $loop; ?>]" data-allow_clear="yes" data-placeholder="<?php esc_attr_e( 'Search for a Product Bundle&hellip;', 'woocommerce-product-bundles-variation-bundles' ); ?>" data-action="woocommerce_json_search_variable_bundles" data-exclude="<?php echo intval( $variation->ID ); ?>" data-limit="100" data-sortable="true">
+				<select class="sw-select2-search--products variation-bundles-select" style="width: 100%" id="variable_bundles_id[<?php echo $loop; ?>]" name="variable_bundles_id[<?php echo $loop; ?>]" data-allow_clear="yes" data-placeholder="<?php esc_attr_e( 'Search for a Product Bundle&hellip;', 'woocommerce-product-bundles-variation-bundles' ); ?>" data-action="woocommerce_json_search_variable_bundles" data-exclude="<?php echo intval( $variation->ID ); ?>" data-limit="100" data-sortable="true">
 					<?php
 
 						$variation_object = wc_get_product( $variation->ID );
