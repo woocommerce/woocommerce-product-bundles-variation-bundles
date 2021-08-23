@@ -281,7 +281,7 @@ class WC_PB_Variable_Bundles {
 		?><div class="variation_bundles_row">
 			<p class="form-field form-row form-row-full">
 				<label for="variable_bundles_id"><?php _e( 'Variation Bundle', 'woocommerce-product-bundles-variation-bundles' ); ?></label>
-				<?php echo wc_help_tip( __( 'Choose a static Product Bundle to add to the cart instead of this variation.', 'woocommerce-product-bundles-variation-bundles' ) ); ?>
+				<?php echo wc_help_tip( __( 'Choose a non-configurable Product Bundle to add to the cart instead of this variation. When this option is populated, all standard variation properties will be inherited from the specified Product Bundle.', 'woocommerce-product-bundles-variation-bundles' ) ); ?>
 				<select class="sw-select2-search--products variation-bundles-select" style="width: 100%" id="variable_bundles_id[<?php echo $loop; ?>]" name="variable_bundles_id[<?php echo $loop; ?>]" data-allow_clear="yes" data-placeholder="<?php esc_attr_e( 'Search for a Product Bundle&hellip;', 'woocommerce-product-bundles-variation-bundles' ); ?>" data-action="woocommerce_json_search_variable_bundles" data-exclude="<?php echo intval( $variation->ID ); ?>" data-limit="100" data-sortable="true">
 					<?php
 
