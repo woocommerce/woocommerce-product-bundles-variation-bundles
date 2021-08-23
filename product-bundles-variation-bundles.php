@@ -172,8 +172,8 @@ class WC_PB_Variable_Bundles {
 			$styles = '
 			<style>
 				.woocommerce_variable_attributes.variation_bundle_enabled .form-row.options label.tips,
-				.woocommerce_variable_attributes.variation_bundle_enabled .form-row:not(.options, .upload_image ),
-				.woocommerce_variable_attributes.variation_bundle_enabled .form-field {
+				.woocommerce_variable_attributes.variation_bundle_enabled .form-row:not(.options, .upload_image, [class*="variable_description"] ),
+				.woocommerce_variable_attributes.variation_bundle_enabled .form-field:not([class*="variable_description"]) {
 					display: none !important;
 				}
 				.woocommerce_variable_attributes.variation_bundle_enabled .variation_bundles_row .form-field {
