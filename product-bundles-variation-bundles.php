@@ -394,9 +394,9 @@ class WC_PB_Variable_Bundles {
 			$product->set_length( '' );
 			$product->set_shipping_class_id( 0 );
 			$product->set_tax_class( '' );
-			$product->set_regular_price( 0 );
-			$product->set_price( 0 );
-			$product->set_sale_price( 0 );
+			$product->set_regular_price( '0' );
+			$product->set_price( '0' );
+			$product->set_sale_price( '0' );
 		}
 	}
 
