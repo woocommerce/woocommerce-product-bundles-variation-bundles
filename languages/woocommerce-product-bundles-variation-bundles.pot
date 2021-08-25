@@ -2,9 +2,9 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Product Bundles - Variation Bundles 1.0.4\n"
+"Project-Id-Version: Product Bundles - Variation Bundles 1.1.0\n"
 "Report-Msgid-Bugs-To: https://support.woothemes.com/hc/en-us\n"
-"POT-Creation-Date: 2021-08-13 14:14:24+00:00\n"
+"POT-Creation-Date: 2021-08-23 09:55:47+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -13,28 +13,31 @@ msgstr ""
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
-#: product-bundles-variation-bundles.php:188
+#: product-bundles-variation-bundles.php:283
 msgid "Variation Bundle"
 msgstr ""
 
-#: product-bundles-variation-bundles.php:189
-msgid "Choose a static Product Bundle to add to the cart instead of this variation."
+#: product-bundles-variation-bundles.php:284
+msgid ""
+"Choose a non-configurable Product Bundle to add to the cart instead of this "
+"variation. When this option is populated, all standard variation properties "
+"will be inherited from the specified Product Bundle."
 msgstr ""
 
-#: product-bundles-variation-bundles.php:190
+#: product-bundles-variation-bundles.php:285
 msgid "Search for a Product Bundle&hellip;"
 msgstr ""
 
-#: product-bundles-variation-bundles.php:214
+#: product-bundles-variation-bundles.php:309
 msgid ""
 "<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a "
 "href=\"%1$s\" target=\"_blank\">WooCommerce Product Bundles</a> version "
 "<strong>%2$s</strong> or higher."
 msgstr ""
 
-#: product-bundles-variation-bundles.php:363
-#: product-bundles-variation-bundles.php:375
-#: product-bundles-variation-bundles.php:430
+#: product-bundles-variation-bundles.php:851
+#: product-bundles-variation-bundles.php:863
+#: product-bundles-variation-bundles.php:918
 msgid "Variation Bundles"
 msgstr ""
 
