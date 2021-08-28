@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: SomewhereWarm
  * Author URI: https://somewherewarm.com/
  *
@@ -14,10 +14,10 @@
  * Tested up to: 5.8
  * Requires PHP: 5.6
  *
- * WC requires at least: 3.1
- * WC tested up to: 5.6
+ * WC requires at least: 3.8
+ * WC tested up to: 5.7
  *
- * Copyright: © 2017-2020 SomewhereWarm SMPC.
+ * Copyright: © 2017-2021 SomewhereWarm SMPC.
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.1.0';
+	public static $version = '1.1.1';
 
 	/**
 	 * Min required PB version.
@@ -42,6 +42,13 @@ class WC_PB_Variable_Bundles {
 	 * @var string
 	 */
 	public static $req_pb_version = '5.5';
+
+	/**
+	 * Min required WC version.
+	 *
+	 * @var string
+	 */
+	public static $req_wc_version = '3.8';
 
 	/**
 	 * PB URL.
@@ -80,6 +87,11 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function load_plugin() {
 
+		if ( ! function_exists( 'WC' ) || version_compare( WC()->version, self::$req_wc_version ) < 0 ) {
+			add_action( 'admin_notices', array( __CLASS__, 'wc_admin_notice' ) );
+			return false;
+		}
+
 		if ( ! function_exists( 'WC_PB' ) || version_compare( WC_PB()->version, self::$req_pb_version ) < 0 ) {
 			add_action( 'admin_notices', array( __CLASS__, 'pb_admin_notice' ) );
 			return false;
@@ -92,7 +104,7 @@ class WC_PB_Variable_Bundles {
 		add_action( 'wp_ajax_woocommerce_json_search_variable_bundles', array( __CLASS__, 'ajax_search_variable_bundles' ) );
 
 		// Save extra meta info for variations.
-		add_action( 'woocommerce_save_product_variation', array( __CLASS__, 'process_variable_bundles' ), 30, 2 );
+		add_action( 'woocommerce_admin_process_variation_object', array( __CLASS__, 'process_variable_bundles' ), 10, 2 );
 
 		// Inherit props from mapped bundle.
 		add_action( 'woocommerce_before_product_object_save', array( __CLASS__, 'before_product_object_save' ), 10 );
@@ -310,6 +322,13 @@ class WC_PB_Variable_Bundles {
 	}
 
 	/**
+	 * WC version check notice.
+	 */
+	public static function wc_admin_notice() {
+		echo '<div class="error"><p>' . sprintf( __( '<strong>Product Bundles &ndash; Variation Bundles</strong> requires <a href="%1$s" target="_blank">WooCommerce</a> version <strong>%2$s</strong> or higher.', 'woocommerce-product-bundles-variation-bundles' ), self::$pb_url, self::$req_wc_version ) . '</p></div>';
+	}
+
+	/**
 	 * Ajax search for bundled variations.
 	 */
 	public static function ajax_search_variable_bundles() {
@@ -350,12 +369,11 @@ class WC_PB_Variable_Bundles {
 	/**
 	 * Save extra meta info for variations.
 	 *
-	 * @param int $variation_id
-	 * @param int $index
+	 * @param WC_Product_Variation  $variation_id
+	 * @param int                   $index
 	 */
-	public static function process_variable_bundles( $variation_id, $index ) {
+	public static function process_variable_bundles( $variation, $index ) {
 
-		$variation           = wc_get_product( $variation_id );
 		$variation_bundle_id = ! empty( $_POST[ 'variable_bundles_id' ][ $index ] ) ? absint( $_POST[ 'variable_bundles_id' ][ $index ] ) : false;
 
 		if ( $variation_bundle_id ) {
@@ -363,8 +381,6 @@ class WC_PB_Variable_Bundles {
 		} else {
 			$variation->delete_meta_data( '_wc_pb_variable_bundle' );
 		}
-
-		$variation->save();
 	}
 
 	/**
@@ -381,7 +397,7 @@ class WC_PB_Variable_Bundles {
 			return;
 		}
 
-		if ( $variation_bundle = self::maybe_get_variation_bundle( $product ) ) {
+		if ( $variation_bundle = self::maybe_get_variation_bundle( $product, false ) ) {
 
 			$product->set_manage_stock( false );
 			$product->set_downloadable( false );
@@ -394,9 +410,10 @@ class WC_PB_Variable_Bundles {
 			$product->set_length( '' );
 			$product->set_shipping_class_id( 0 );
 			$product->set_tax_class( '' );
-			$product->set_regular_price( '0' );
-			$product->set_price( '0' );
-			$product->set_sale_price( '0' );
+
+			if ( '' === $product->get_regular_price( 'edit' ) ) {
+				$product->set_regular_price( '0' );
+			}
 		}
 	}
 
@@ -726,9 +743,10 @@ class WC_PB_Variable_Bundles {
 	 * @since  1.1.0
 	 *
 	 * @param  WC_Product_Variation|int  $variation
+	 * @param  bool                      $use_cache
 	 * @return WC_Product_Bundle|false
 	 */
-	public static function maybe_get_variation_bundle( $variation ) {
+	public static function maybe_get_variation_bundle( $variation, $use_cache = true ) {
 
 		if ( $variation instanceof WC_Product_Variation ) {
 			$variation_id = $variation->get_id();
@@ -736,10 +754,11 @@ class WC_PB_Variable_Bundles {
 			$variation_id = (int) $variation;
 		}
 
-		$variation_bundle = WC_PB_Helpers::cache_get( 'variation_bundle_' . $variation_id );
-
-		if ( null !== $variation_bundle ) {
-			return $variation_bundle;
+		if ( $use_cache ) {
+			$variation_bundle = WC_PB_Helpers::cache_get( $variation_id, 'variation_bundles' );
+			if ( null !== $variation_bundle ) {
+				return $variation_bundle;
+			}
 		}
 
 		$variation_bundle    = false;
@@ -755,7 +774,9 @@ class WC_PB_Variable_Bundles {
 			$variation_bundle = wc_get_product( $variation_bundle_id );
 		}
 
-		WC_PB_Helpers::cache_set( 'variation_bundle_' . $variation_id, $variation_bundle );
+		if ( $use_cache ) {
+			WC_PB_Helpers::cache_set( $variation_id, $variation_bundle, 'variation_bundles' );
+		}
 
 		return $variation_bundle;
 	}
