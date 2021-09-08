@@ -38,6 +38,9 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 == Changelog ==
 
+= 1.2.0 =
+* Fix - Fixed fatal error that showed up when bundling a Variable Product with Variation Bundles.
+
 = 1.1.1 =
 * Fix - Make sure variation fields are saved correctly when removing a saved Variation Bundle.
 

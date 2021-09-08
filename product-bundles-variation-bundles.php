@@ -700,7 +700,7 @@ class WC_PB_Variable_Bundles {
 		// Filter regular prices.
 		foreach ( $prices_array[ 'regular_price' ] as $variation_id => $regular_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price();
+				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price( 'sync' );
 			} else {
 				$regular_prices[ $variation_id ] = $regular_price;
 			}
@@ -709,7 +709,7 @@ class WC_PB_Variable_Bundles {
 		// Filter prices.
 		foreach ( $prices_array[ 'price' ] as $variation_id => $price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
 			} else {
 				$prices[ $variation_id ] = $price;
 			}
@@ -718,7 +718,7 @@ class WC_PB_Variable_Bundles {
 		// Filter sale prices.
 		foreach ( $prices_array[ 'sale_price' ] as $variation_id => $sale_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
 			} else {
 				$sale_prices[ $variation_id ] = $sale_price;
 			}
