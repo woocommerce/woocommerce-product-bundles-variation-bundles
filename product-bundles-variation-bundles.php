@@ -119,10 +119,10 @@ class WC_PB_Variable_Bundles {
 		add_filter( 'woocommerce_product_variation_get_height', array( __CLASS__, 'variation_get_height' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_shipping_class_id', array( __CLASS__, 'variation_get_shipping_class_id' ), 10, 2 );
 		add_filter( 'woocommerce_product_variation_get_tax_class', array( __CLASS__, 'variation_get_tax_class' ), 10, 2 );
-		add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'variation_get_price' ), 10, 2 );
-		add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'variation_get_regular_price' ), 10, 2 );
-		add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'variation_get_sale_price' ), 10, 2 );
-		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'variation_prices' ), 10, 2 );
+		add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'variation_get_price' ), -1000, 2 );
+		add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'variation_get_regular_price' ), -1000, 2 );
+		add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'variation_get_sale_price' ), -1000, 2 );
+		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'variation_prices' ), -1000, 2 );
 
 		// Add Product Bundle to the cart instead of variation.
 		add_filter( 'woocommerce_add_to_cart_product_id', array( __CLASS__, 'add_bundle_to_cart' ) );
@@ -700,7 +700,7 @@ class WC_PB_Variable_Bundles {
 		// Filter regular prices.
 		foreach ( $prices_array[ 'regular_price' ] as $variation_id => $regular_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price();
+				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price( 'sync' );
 			} else {
 				$regular_prices[ $variation_id ] = $regular_price;
 			}
@@ -709,7 +709,7 @@ class WC_PB_Variable_Bundles {
 		// Filter prices.
 		foreach ( $prices_array[ 'price' ] as $variation_id => $price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
 			} else {
 				$prices[ $variation_id ] = $price;
 			}
@@ -718,7 +718,7 @@ class WC_PB_Variable_Bundles {
 		// Filter sale prices.
 		foreach ( $prices_array[ 'sale_price' ] as $variation_id => $sale_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price();
+				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
 			} else {
 				$sale_prices[ $variation_id ] = $sale_price;
 			}
