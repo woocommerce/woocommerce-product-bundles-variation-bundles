@@ -621,8 +621,7 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_tax_class( $tax_class, $variation ) {
 
-		$parent_id      = $variation->get_parent_id();
-		$parent_product = wc_get_product( $parent_id );
+		$parent_product = self::get_variation_parent( $variation );
 
 		if ( 'none' === $parent_product->get_tax_status() ) {
 			return $tax_class;
@@ -993,6 +992,27 @@ class WC_PB_Variable_Bundles {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Returns the parent product object of the variation using cache
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  WC_Product  $variation
+	 * @return WC_Product
+	 */
+	public static function get_variation_parent( $variation ) {
+		$parent_id      = $variation->get_parent_id();
+		$cache_key      = WC_Cache_Helper::get_cache_prefix( 'variation_bundle_parent' ) . $parent_id;
+		$parent_product = wp_cache_get( $cache_key, 'variation_bundle_parent' );
+
+		if ( ! is_a( $parent_product, 'WC_Product' )  ) {
+			$parent_product = wc_get_product( $parent_id );
+			wp_cache_set( $cache_key, $parent_product, 'variation_bundle_parent' );
+		}
+
+		return $parent_product;
 	}
 }
 
