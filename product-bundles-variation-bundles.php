@@ -393,6 +393,10 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function before_product_object_save( $product ) {
 
+		if ( $product->is_type( 'variable' ) ) {
+			wp_cache_delete( $product->get_id() );
+		}
+
 		if ( ! $product->is_type( 'variation' ) ) {
 			return;
 		}
@@ -702,14 +706,14 @@ class WC_PB_Variable_Bundles {
 		$prices         = array();
 		$regular_prices = array();
 		$sale_prices    = array();
-
+		$tax_setting    = wc_tax_enabled() ? get_option( 'woocommerce_tax_display_shop' ) : '';
 		// Filter regular prices.
 		foreach ( $prices_array[ 'regular_price' ] as $variation_id => $regular_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				if ( $for_display && wc_tax_enabled() && 'none' !== $product->get_tax_status() ) {
-					if ( 'incl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
 						$regular_prices[ $variation_id ] = $variation_bundle->get_bundle_regular_price_including_tax( 'min' );
-					} elseif ( 'excl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+					} elseif ( 'excl' === $tax_setting ) {
 						$regular_prices[ $variation_id ] = $variation_bundle->get_bundle_regular_price_excluding_tax( 'min' );
 					}
 				} else {
@@ -723,10 +727,10 @@ class WC_PB_Variable_Bundles {
 		// Filter prices.
 		foreach ( $prices_array[ 'price' ] as $variation_id => $price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				if ( $for_display && wc_tax_enabled() && 'none' !== $product->get_tax_status() ) {
-					if ( 'incl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
 						$prices[ $variation_id ] = $variation_bundle->get_bundle_price_including_tax( 'min' );
-					} elseif ( 'excl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+					} elseif ( 'excl' === $tax_setting ) {
 						$prices[ $variation_id ] = $variation_bundle->get_bundle_price_excluding_tax( 'min' );
 					}
 				} else {
@@ -740,10 +744,10 @@ class WC_PB_Variable_Bundles {
 		// Filter sale prices.
 		foreach ( $prices_array[ 'sale_price' ] as $variation_id => $sale_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				if ( $for_display && wc_tax_enabled() && 'none' !== $product->get_tax_status() ) {
-					if ( 'incl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
 						$sale_prices[ $variation_id ] = $variation_bundle->get_bundle_price_including_tax( 'min' );
-					} elseif ( 'excl' === get_option( 'woocommerce_tax_display_shop' ) ) {
+					} elseif ( 'excl' === $tax_setting ) {
 						$sale_prices[ $variation_id ] = $variation_bundle->get_bundle_price_excluding_tax( 'min' );
 					}
 				} else {
@@ -1004,12 +1008,12 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function get_variation_parent( $variation ) {
 		$parent_id      = $variation->get_parent_id();
-		$cache_key      = WC_Cache_Helper::get_cache_prefix( 'variation_bundle_parent' ) . $parent_id;
-		$parent_product = wp_cache_get( $cache_key, 'variation_bundle_parent' );
+		$cache_key      = $parent_id;
+		$parent_product = wp_cache_get( $cache_key );
 
 		if ( ! is_a( $parent_product, 'WC_Product' )  ) {
 			$parent_product = wc_get_product( $parent_id );
-			wp_cache_set( $cache_key, $parent_product, 'variation_bundle_parent' );
+			wp_cache_set( $cache_key, $parent_product );
 		}
 
 		return $parent_product;
