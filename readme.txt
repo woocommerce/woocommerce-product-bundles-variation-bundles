@@ -5,7 +5,7 @@ Tags: woocommerce, product, bundles, map, variation
 Requires at least: 4.4
 Tested up to: 5.8
 Requires PHP: 5.6
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 WC requires at least: 3.8
 WC tested up to: 5.7
 License: GNU General Public License v3.0
@@ -37,6 +37,9 @@ This plugin requires the official [WooCommerce Product Bundles](https://woocomme
 
 
 == Changelog ==
+
+= 1.1.3 =
+* Fix - Make sure Variation Bundle prices respect tax display settings.
 
 = 1.1.2 =
 * Fix - Fixed fatal error that showed up when bundling a Variable Product with Variation Bundles.

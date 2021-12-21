@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: SomewhereWarm
  * Author URI: https://somewherewarm.com/
  *
@@ -34,7 +34,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.1.2';
+	public static $version = '1.1.3';
 
 	/**
 	 * Min required PB version.
@@ -122,7 +122,7 @@ class WC_PB_Variable_Bundles {
 		add_filter( 'woocommerce_product_variation_get_price', array( __CLASS__, 'variation_get_price' ), -1000, 2 );
 		add_filter( 'woocommerce_product_variation_get_regular_price', array( __CLASS__, 'variation_get_regular_price' ), -1000, 2 );
 		add_filter( 'woocommerce_product_variation_get_sale_price', array( __CLASS__, 'variation_get_sale_price' ), -1000, 2 );
-		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'variation_prices' ), -1000, 2 );
+		add_filter( 'woocommerce_variation_prices', array( __CLASS__, 'variation_prices' ), -1000, 3 );
 
 		// Add Product Bundle to the cart instead of variation.
 		add_filter( 'woocommerce_add_to_cart_product_id', array( __CLASS__, 'add_bundle_to_cart' ) );
@@ -393,6 +393,10 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function before_product_object_save( $product ) {
 
+		if ( $product->is_type( 'variable' ) ) {
+			wp_cache_delete( 'variation_bundle_parent' . $product->get_id(), 'products' );
+		}
+
 		if ( ! $product->is_type( 'variation' ) ) {
 			return;
 		}
@@ -621,6 +625,12 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function variation_get_tax_class( $tax_class, $variation ) {
 
+		$parent_product = self::get_variation_parent( $variation );
+
+		if ( 'none' === $parent_product->get_tax_status() ) {
+			return $tax_class;
+		}
+
 		if ( $variation_bundle = self::maybe_get_variation_bundle( $variation ) ) {
 			$tax_class = $variation_bundle->get_tax_class();
 		}
@@ -691,16 +701,24 @@ class WC_PB_Variable_Bundles {
 	 * @param  WC_Product  $product
 	 * @return void
 	 */
-	public static function variation_prices( $prices_array, $product ) {
+	public static function variation_prices( $prices_array, $product, $for_display ) {
 
 		$prices         = array();
 		$regular_prices = array();
 		$sale_prices    = array();
-
+		$tax_setting    = wc_tax_enabled() ? get_option( 'woocommerce_tax_display_shop' ) : '';
 		// Filter regular prices.
 		foreach ( $prices_array[ 'regular_price' ] as $variation_id => $regular_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price( 'sync' );
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
+						$regular_prices[ $variation_id ] = $variation_bundle->get_bundle_regular_price_including_tax( 'min' );
+					} elseif ( 'excl' === $tax_setting ) {
+						$regular_prices[ $variation_id ] = $variation_bundle->get_bundle_regular_price_excluding_tax( 'min' );
+					}
+				} else {
+					$regular_prices[ $variation_id ] = $variation_bundle->get_min_raw_regular_price( 'sync' );
+				}
 			} else {
 				$regular_prices[ $variation_id ] = $regular_price;
 			}
@@ -709,7 +727,15 @@ class WC_PB_Variable_Bundles {
 		// Filter prices.
 		foreach ( $prices_array[ 'price' ] as $variation_id => $price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
+						$prices[ $variation_id ] = $variation_bundle->get_bundle_price_including_tax( 'min' );
+					} elseif ( 'excl' === $tax_setting ) {
+						$prices[ $variation_id ] = $variation_bundle->get_bundle_price_excluding_tax( 'min' );
+					}
+				} else {
+					$prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
+				}
 			} else {
 				$prices[ $variation_id ] = $price;
 			}
@@ -718,7 +744,15 @@ class WC_PB_Variable_Bundles {
 		// Filter sale prices.
 		foreach ( $prices_array[ 'sale_price' ] as $variation_id => $sale_price ) {
 			if ( $variation_bundle = self::maybe_get_variation_bundle( $variation_id ) ) {
-				$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
+				if ( $for_display && ! empty( $tax_setting ) && 'none' !== $product->get_tax_status() ) {
+					if ( 'incl' === $tax_setting ) {
+						$sale_prices[ $variation_id ] = $variation_bundle->get_bundle_price_including_tax( 'min' );
+					} elseif ( 'excl' === $tax_setting ) {
+						$sale_prices[ $variation_id ] = $variation_bundle->get_bundle_price_excluding_tax( 'min' );
+					}
+				} else {
+					$sale_prices[ $variation_id ] = $variation_bundle->get_min_raw_price( 'sync' );
+				}
 			} else {
 				$sale_prices[ $variation_id ] = $sale_price;
 			}
@@ -962,6 +996,27 @@ class WC_PB_Variable_Bundles {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Returns the parent product object of the variation using cache
+	 *
+	 * @since  1.1.3
+	 *
+	 * @param  WC_Product  $variation
+	 * @return WC_Product
+	 */
+	public static function get_variation_parent( $variation ) {
+		$parent_id      = $variation->get_parent_id();
+		$cache_key      = 'variation_bundle_parent' . $parent_id;
+		$parent_product = wp_cache_get( $cache_key, 'products' );
+
+		if ( ! is_a( $parent_product, 'WC_Product' )  ) {
+			$parent_product = wc_get_product( $parent_id );
+			wp_cache_set( $cache_key, $parent_product, 'products' );
+		}
+
+		return $parent_product;
 	}
 }
 
