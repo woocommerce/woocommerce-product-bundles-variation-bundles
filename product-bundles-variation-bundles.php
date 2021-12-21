@@ -394,7 +394,7 @@ class WC_PB_Variable_Bundles {
 	public static function before_product_object_save( $product ) {
 
 		if ( $product->is_type( 'variable' ) ) {
-			wp_cache_delete( $product->get_id() );
+			wp_cache_delete( 'variation_bundle_parent' . $product->get_id(), 'products' );
 		}
 
 		if ( ! $product->is_type( 'variation' ) ) {
@@ -1008,12 +1008,12 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function get_variation_parent( $variation ) {
 		$parent_id      = $variation->get_parent_id();
-		$cache_key      = $parent_id;
-		$parent_product = wp_cache_get( $cache_key );
+		$cache_key      = 'variation_bundle_parent' . $parent_id;
+		$parent_product = wp_cache_get( $cache_key, 'products' );
 
 		if ( ! is_a( $parent_product, 'WC_Product' )  ) {
 			$parent_product = wc_get_product( $parent_id );
-			wp_cache_set( $cache_key, $parent_product );
+			wp_cache_set( $cache_key, $parent_product, 'products' );
 		}
 
 		return $parent_product;
