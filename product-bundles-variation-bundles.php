@@ -3,7 +3,7 @@
  * Plugin Name: Product Bundles - Variation Bundles
  * Plugin URI: https://docs.woocommerce.com/document/bundles/bundles-extensions/
  * Description: Free mini-extension for WooCommerce Product Bundles that allows you to map variations to Product Bundles.
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: franticpsyx
  * Author URI: https://somewherewarm.com/
  *
@@ -11,11 +11,11 @@
  * Domain Path: /languages/
  *
  * Requires at least: 4.4
- * Tested up to: 5.8
+ * Tested up to: 6.3
  * Requires PHP: 5.6
  *
  * WC requires at least: 3.8
- * WC tested up to: 5.7
+ * WC tested up to: 8.0
  *
  * License: GNU General Public License v3.0
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -33,7 +33,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '1.1.3';
+	public static $version = '1.1.4';
 
 	/**
 	 * Min required PB version.
@@ -131,6 +131,9 @@ class WC_PB_Variable_Bundles {
 
 		// Store variation ID in cart item data.
 		add_action( 'woocommerce_add_cart_item_data', array(  __CLASS__, 'store_variation_id' ), 10, 3 );
+
+		// Declare HPOS compatibility.
+		add_action( 'before_woocommerce_init', array( __CLASS__, 'declare_hpos_compatibility' ) );
 
 		// Localization.
 		add_action( 'init', array( __CLASS__, 'localize_plugin' ) );
@@ -276,6 +279,19 @@ class WC_PB_Variable_Bundles {
 	 */
 	public static function localize_plugin() {
 		load_plugin_textdomain( 'woocommerce-product-bundles-variation-bundles', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+	}
+
+	/**
+	 * Declare HPOS( Custom Order tables) compatibility.
+	 *
+	 */
+	public static function declare_hpos_compatibility() {
+
+		if ( ! class_exists( 'Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+			return;
+		}
+
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', plugin_basename( __FILE__ ), true );
 	}
 
 
