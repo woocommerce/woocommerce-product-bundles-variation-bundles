@@ -1,6 +1,6 @@
 === Product Bundles - Variation Bundles ===
 
-Contributors: SomewhereWarm
+Contributors: automattic, woocommerce, SomewhereWarm
 Tags: woocommerce, product, bundles, map, variation
 Requires at least: 6.2
 Tested up to: 6.6
