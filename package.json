@@ -3,10 +3,10 @@
 	"title": "Product Bundles - Bundle Variations for WooCommerce",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/somewherewarm/woocommerce-product-bundles-bundle-variations.git"
+		"url": "https://github.com/woocommerce/woocommerce-product-bundles-bundle-variations.git"
 	},
 	"license": "GPL-3.0+",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"homepage": "https://woocommerce.com/products/product-bundles/",
 	"main": "Gruntfile.js",
 	"devDependencies": {
