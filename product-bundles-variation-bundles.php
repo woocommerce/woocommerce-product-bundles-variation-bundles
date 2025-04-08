@@ -33,7 +33,7 @@ class WC_PB_Variable_Bundles {
 	 *
 	 * @var string
 	 */
-	public static $version = '2.0.1';
+	public static $version = '2.0.2';
 
 	/**
 	 * Min required PB version.
@@ -642,7 +642,7 @@ class WC_PB_Variable_Bundles {
 
 		$parent_product = self::get_variation_parent( $variation );
 
-		if ( 'none' === $parent_product->get_tax_status() ) {
+		if ( ! $parent_product || 'none' === $parent_product->get_tax_status() ) {
 			return $tax_class;
 		}
 
