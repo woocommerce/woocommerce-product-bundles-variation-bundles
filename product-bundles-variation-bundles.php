@@ -642,7 +642,7 @@ class WC_PB_Variable_Bundles {
 
 		$parent_product = self::get_variation_parent( $variation );
 
-		if ( ! $parent_product || 'none' === $parent_product->get_tax_status() ) {
+		if ( ! is_a( $parent_product, 'WC_Product' ) || 'none' === $parent_product->get_tax_status() ) {
 			return $tax_class;
 		}
 
